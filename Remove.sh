@@ -3,8 +3,8 @@
 # Remove modules
 arduino-cli \
   lib uninstall \
-    me_BaseTypes \
+    me_MemorySegment \
+    me_Console \
+    me_Uart \
     me_UartSpeeds \
-    me_InstallStandardStreams \
-    me_MemoryPoint \
-    me_MemorySegment
+    me_BaseTypes
