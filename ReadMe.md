@@ -1,6 +1,6 @@
 # What
 
-(2024-05, 2024-12)
+(2024-05, 2024-12, 2025-08)
 
 It's the question that drives us, Neo.
 
@@ -10,26 +10,15 @@ Arduino program to transmit all memory contents via UART (115200 baud).
 ## Sample output (trimmed)
 
 ```
-00000 ( 000 000 255 255 179 235 [...] )
+( 000 000 255 255 179 235 [...] )
 ```
 
-## Wtf?!
-
-How to describe memory segment?
-
-What is memory segment?
-
-It is segment of memory units. Segment can be described as starting point
-and length. Memory units are bytes.
+## Notes
 
 All integers are represented as fixed-length decimals in ASCII.
 
-Data is wrapped in list. So we don't need to transfer length of segment.
-
-(And yes, I've tried neat hex dumps. It's dead-end. Just a pleasant
-look for human specie. Program that processes that hex dump output
-will need to parse it back to machine bytes. So we're just making this
-parsing simpler.)
+Yes I've tried neat hex dumps. It's dead-end. Just a pleasant
+look for human specie.
 
 
 ## Details
@@ -43,16 +32,19 @@ parsing simpler.)
   * arduino-cli
 
 
-## Install
+## Install/remove
 
-Run [Install.sh](Install.sh).
+Clone [GetLibs][GetLibs] repo and run it's code.
 
-
-## Remove
-
-Run [Remove.sh](Remove.sh).
+It allows install/remove all my libraries.
 
 
 ## See also
 
-[My other repositories](https://github.com/martin-eden/contents).
+* [My other embedded C++ stuff][Embedded]
+* [My other repositories][Repos]
+
+
+[GetLibs]: https://github.com/martin-eden/Embedded-Framework-GetLibs
+[Embedded]: https://github.com/martin-eden/Embedded_Crafts
+[Repos]: https://github.com/martin-eden/contents

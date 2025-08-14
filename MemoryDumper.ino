@@ -2,19 +2,17 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2024-12-09
+  Last mod.: 2025-08-14
 */
 
 /*
   There are three types of memories in AVR: SRAM, Flash and EEPROM.
 
-  SRAM is fast and infinitely rewritable. But non-persistent.
+  SRAM is fast and infinitely rewritable. But not persistent.
 
-  Flash (aka PROGMEM) is fast and persistent. But has a lifespan
-  about 10k writes.
+  Flash (aka PROGMEM) is fast and persistent. Lifespan about 10k writes.
 
-  EEPROM is persistent and has a lifespan about 100k writes.
-  But slow to write.
+  EEPROM is slow and persistent. Lifespan about 100k writes.
 
            | Read time | Write time | Write endurance |  Amount
    --------+-----------+------------+-----------------+----------
@@ -35,20 +33,53 @@
   magic. For example parsed UART byte lives at offset 192. Reading
   that location will make appear there next parsed UART byte.
 
-  So reading is not transparent. Quantum world lol.
+  Quantum world lol.
 */
 
 #include <me_BaseTypes.h>
-
-#include <me_MemorySegment.h>
-
 #include <me_Uart.h>
-#include <me_UartSpeeds.h>
 #include <me_Console.h>
+#include <me_WorkMemory.h>
+
+/*
+  Print memory contents
+
+  Memory range is hardcoded.
+
+  Output format
+
+    "(" Byte.. ")"
+
+    Byte values are represented as 3-digit decimals in ASCII.
+
+  Sample output:
+
+    ( 032 010 013 )\n
+*/
+void PrintMemory()
+{
+  // Memory starts to repeat itself after offset 2304 ( = 2048 + 256)
+
+  TAddress StartAddr = 0;
+  TAddress EndAddr = 2048 + 256;
+  TUint_1 ByteValue;
+
+  Console.Write("(");
+
+  for (TAddress Addr = StartAddr; Addr <= EndAddr; ++Addr)
+  {
+    me_WorkMemory::GetByte(&ByteValue, Addr);
+    Console.Print(ByteValue);
+  }
+
+  Console.Write(")");
+
+  Console.EndLine();
+}
 
 void setup()
 {
-  me_Uart::Init(me_UartSpeeds::Bps_115k);
+  me_Uart::Init(me_Uart::Speed_115k_Bps);
 
   PrintMemory();
 }
@@ -58,59 +89,8 @@ void loop()
 }
 
 /*
-  Print memory segment offset and contents
-
-  Format
-
-    Start "(" Bytes.. ")"
-
-  Description
-
-    We're sending two elements: data offset and data.
-
-    Integers are represented as decimals in ASCII.
-
-  Sample output:
-
-    01337 ( 032 010 013 )\n
-*/
-void PrintSegment(
-  me_MemorySegment::TMemorySegment Memseg
-)
-{
-  Console.Print(Memseg.Addr);
-
-  Console.Write("(");
-
-  for (TUint_2 Offset = 0; Offset < Memseg.Size; ++Offset)
-  {
-    Console.Print(Memseg.Bytes[Offset]);
-  }
-
-  Console.Write(")");
-
-  Console.EndLine();
-}
-
-/*
-  Print memory contents
-
-  Memory range is hardcoded.
-*/
-void PrintMemory()
-{
-  // Memory starts to repeat itself after offset (2048 + 256)
-
-  me_MemorySegment::TMemorySegment Range;
-
-  Range.Addr = 0;
-  Range.Size = 2048 + 256;
-
-  PrintSegment(Range);
-}
-
-/*
   2024-05-24
   2024-10-03
   2024-12-09
+  2025-08-14
 */
