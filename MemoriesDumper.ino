@@ -1,4 +1,4 @@
-// Simple KSP-like craft to print SRAM memory contents
+// Print contents of SRAM, Flash and EEPROM.
 
 /*
   Author: Martin Eden
@@ -7,6 +7,8 @@
 
 /*
   There are three types of memories in AVR: SRAM, Flash and EEPROM.
+
+  We gonna dump em all.
 
   SRAM is fast and infinitely rewritable. But not persistent.
 
@@ -21,43 +23,32 @@
     EEPROM |     1     |     10k    |      100k       |     1k
 */
 
-/*
-  Microcontroller has special stuff like timers, protocol codecs,
-  sleep modes, encryption, memory access etc.
-
-  It can be thought as functions hardcoded in transistors. They are
-  running parallel with main code. Their state lives in lower SRAM
-  addresses (from 0 to 255).
-
-  Reading at some positions from that addresses can trigger hardware
-  magic. For example parsed UART byte lives at offset 192. Reading
-  that location will make appear there next parsed UART byte.
-
-  Quantum world lol.
-*/
-
 #include <me_WorkMemory.h>
+#include <me_ProgramMemory.h>
+#include <me_Eeprom.h>
 
 #include <me_BaseTypes.h>
 #include <me_BaseInterfaces.h>
 #include <me_Console.h>
 
-/*
-  Print memory contents
+#include <me_MemsegStreams.h>
 
-  Memory range is hardcoded.
+/*
+  Print RAM contents
+
+  Program state is stored there.
 
   Output format
 
-    "(" Byte.. ")"
+    "RAM (" Byte.. ")" NewLine
 
     Byte values are represented as 3-digit decimals in ASCII.
 
   Sample output:
 
-    ( 032 010 013 )\n
+    RAM ( 032 010 .. 013 )\n
 */
-void PrintMemory()
+void PrintRam()
 {
   /*
     We can implement it in different ways using [me_WorkMemory]
@@ -69,13 +60,11 @@ void PrintMemory()
     We'll use option (3).
   */
 
-  TAddressSegment RamSeg;
+  TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
   me_WorkMemory::TInputStream RamStream;
   TUnit Unit;
 
-  RamSeg = { .Addr = 0, .Size = TUint_2_Max };
-
-  RamStream.Init(RamSeg);
+  RamStream.Init(AddrSeg);
 
   Console.Write("RAM (");
 
@@ -83,7 +72,69 @@ void PrintMemory()
     Console.Print(Unit);
 
   Console.Write(")");
+  Console.EndLine();
+}
 
+/*
+  Print program memory contents
+
+  Program code is stored there.
+*/
+void PrintFlash()
+{
+  /*
+    At the moment of writing this comment, [me_ProgramMemory] does
+    not provide input stream interface. But it provides Op_GetByte()
+    as TOperation.
+
+    We'll use option (2). We will use adapter to convert operation and
+    address span to input stream.
+  */
+
+  TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
+  me_MemsegStreams::TMemsegInputStream ProgmemStream;
+  TOperation UnitReader = me_ProgramMemory::Op_GetByte;
+  TUnit Unit;
+
+  ProgmemStream.Init(AddrSeg, UnitReader);
+
+  Console.Write("PROGMEM (");
+
+  while (ProgmemStream.Read(&Unit))
+    Console.Print(Unit);
+
+  Console.Write(")");
+  Console.EndLine();
+}
+
+/*
+  Print EEPROM memory contents
+
+  Savegames are stored there.
+*/
+void PrintEeprom()
+{
+  /*
+    At the moment of writing this comment, [me_Eeprom] provides
+    only Get Byte operation.
+
+    We'll to use option (1). We still can wrap that Get Byte as
+    TOperation and wrap TOperation as Stream if we wish so.
+    But we won't.
+  */
+
+  TAddress Address = 0;
+  TUnit Unit;
+
+  Console.Write("EEPROM (");
+
+  while (me_Eeprom::Get(&Unit, Address))
+  {
+    Console.Print(Unit);
+    ++Address;
+  }
+
+  Console.Write(")");
   Console.EndLine();
 }
 
@@ -91,7 +142,15 @@ void setup()
 {
   Console.Init();
 
-  PrintMemory();
+  Console.Print("( Memories dump demo");
+  Console.Indent();
+
+  PrintRam();
+  PrintFlash();
+  PrintEeprom();
+
+  Console.Unindent();
+  Console.Print(") Done");
 }
 
 void loop()
@@ -99,9 +158,7 @@ void loop()
 }
 
 /*
-  2024-05-24
-  2024-10-03
-  2024-12-09
+  2024 # # #
   2025-08-14
   2025-08-27
 */
