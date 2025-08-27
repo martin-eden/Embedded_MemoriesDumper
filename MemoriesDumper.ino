@@ -118,7 +118,7 @@ void PrintEeprom()
     At the moment of writing this comment, [me_Eeprom] provides
     only Get Byte operation.
 
-    We'll to use option (1). We still can wrap that Get Byte as
+    We'll use option (1). We still can wrap that Get Byte as
     TOperation and wrap TOperation as Stream if we wish so.
     But we won't.
   */
