@@ -4,13 +4,21 @@
 
 It's the question that drives us, Neo.
 
-Arduino program to transmit all memory contents via UART (115200 baud).
+Arduino program to transmit all memories content via UART (at 115200 baud).
+
+Transmits contents of SRAM, PROGMEM and EEPROM. That's the entire
+history of you.
 
 
 ## Sample output (trimmed)
 
 ```
-( 000 000 255 255 179 235 [...] )
+( Memories dump demo
+  RAM ( 160 000 [...] )
+  PROGMEM ( 012 148 [...] )
+  EEPROM ( 255 255 [...] )
+) Done
+
 ```
 
 ## Notes
