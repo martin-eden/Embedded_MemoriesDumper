@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-08-14
+  Last mod.: 2025-08-27
 */
 
 /*
@@ -36,10 +36,11 @@
   Quantum world lol.
 */
 
-#include <me_BaseTypes.h>
-#include <me_Uart.h>
-#include <me_Console.h>
 #include <me_WorkMemory.h>
+
+#include <me_BaseTypes.h>
+#include <me_BaseInterfaces.h>
+#include <me_Console.h>
 
 /*
   Print memory contents
@@ -58,19 +59,28 @@
 */
 void PrintMemory()
 {
-  // Memory starts to repeat itself after offset 2304 ( = 2048 + 256)
+  /*
+    We can implement it in different ways using [me_WorkMemory]
 
-  TAddress StartAddr = 0;
-  TAddress EndAddr = 2048 + 256;
-  TUint_1 ByteValue;
+    1. We can call GetByteFrom().
+    2. We can pass function pointer Op_GetByte() as TOperation type.
+    3. We can use TInputStream to traverse memory as stream.
 
-  Console.Write("(");
+    We'll use option (3).
+  */
 
-  for (TAddress Addr = StartAddr; Addr <= EndAddr; ++Addr)
-  {
-    me_WorkMemory::GetByte(&ByteValue, Addr);
-    Console.Print(ByteValue);
-  }
+  TAddressSegment RamSeg;
+  me_WorkMemory::TInputStream RamStream;
+  TUnit Unit;
+
+  RamSeg = { .Addr = 0, .Size = TUint_2_Max };
+
+  RamStream.Init(RamSeg);
+
+  Console.Write("RAM (");
+
+  while (RamStream.Read(&Unit))
+    Console.Print(Unit);
 
   Console.Write(")");
 
@@ -79,7 +89,7 @@ void PrintMemory()
 
 void setup()
 {
-  me_Uart::Init(me_Uart::Speed_115k_Bps);
+  Console.Init();
 
   PrintMemory();
 }
@@ -93,4 +103,5 @@ void loop()
   2024-10-03
   2024-12-09
   2025-08-14
+  2025-08-27
 */
