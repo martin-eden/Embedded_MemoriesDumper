@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-08-27
+  Last mod.: 2025-08-28
 */
 
 /*
@@ -92,7 +92,7 @@ void PrintFlash()
   */
 
   TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
-  me_MemsegStreams::TMemsegInputStream ProgmemStream;
+  me_MemsegStreams::TAddrsegInputStream ProgmemStream;
   TOperation UnitReader = me_ProgramMemory::Op_GetByte;
   TUnit Unit;
 
