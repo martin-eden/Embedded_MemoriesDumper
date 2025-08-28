@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-08-28
+  Last mod.: 2025-08-29
 */
 
 /*
@@ -27,11 +27,11 @@
 #include <me_ProgramMemory.h>
 #include <me_Eeprom.h>
 
+#include <me_StreamTools.h>
+
 #include <me_BaseTypes.h>
 #include <me_BaseInterfaces.h>
 #include <me_Console.h>
-
-#include <me_MemsegStreams.h>
 
 /*
   Print RAM contents
@@ -92,7 +92,7 @@ void PrintFlash()
   */
 
   TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
-  me_MemsegStreams::TAddrsegInputStream ProgmemStream;
+  me_StreamTools::TAddrsegInputStream ProgmemStream;
   TOperation UnitReader = me_ProgramMemory::Op_GetByte;
   TUnit Unit;
 
