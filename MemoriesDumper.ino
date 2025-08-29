@@ -23,11 +23,17 @@
     EEPROM |     1     |     10k    |      100k       |     1k
 */
 
-#include <me_WorkMemory.h>
+/*
+  Memories can be read as streams
+
+  We like stream interface. If we can't use it, we'll use direct functions.
+*/
+
 #include <me_ProgramMemory.h>
 #include <me_Eeprom.h>
 
 #include <me_StreamTools.h>
+#include <me_StreamsCollection.h>
 
 #include <me_BaseTypes.h>
 #include <me_BaseInterfaces.h>
@@ -50,18 +56,8 @@
 */
 void PrintRam()
 {
-  /*
-    We can implement it in different ways using [me_WorkMemory]
-
-    1. We can call GetByteFrom().
-    2. We can pass function pointer Op_GetByte() as TOperation type.
-    3. We can use TInputStream to traverse memory as stream.
-
-    We'll use option (3).
-  */
-
   TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
-  me_WorkMemory::TInputStream RamStream;
+  me_StreamsCollection::TWorkmemInputStream RamStream;
   TUnit Unit;
 
   RamStream.Init(AddrSeg);
@@ -82,26 +78,16 @@ void PrintRam()
 */
 void PrintFlash()
 {
-  /*
-    At the moment of writing this comment, [me_ProgramMemory] does
-    not provide input stream interface. But it provides Op_GetByte()
-    as TOperation.
-
-    We'll use option (2). We will use adapter to convert operation and
-    address span to input stream.
-  */
-
-  TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
-  me_StreamTools::TAddrsegInputStream ProgmemStream;
-  TOperation UnitReader = me_ProgramMemory::Op_GetByte;
+  TAddress Address = 0;
   TUnit Unit;
-
-  ProgmemStream.Init(AddrSeg, UnitReader);
 
   Console.Write("PROGMEM (");
 
-  while (ProgmemStream.Read(&Unit))
+  while (me_ProgramMemory::GetByteFrom(&Unit, Address))
+  {
     Console.Print(Unit);
+    ++Address;
+  }
 
   Console.Write(")");
   Console.EndLine();
@@ -114,15 +100,6 @@ void PrintFlash()
 */
 void PrintEeprom()
 {
-  /*
-    At the moment of writing this comment, [me_Eeprom] provides
-    only Get Byte operation.
-
-    We'll use option (1). We still can wrap that Get Byte as
-    TOperation and wrap TOperation as Stream if we wish so.
-    But we won't.
-  */
-
   TAddress Address = 0;
   TUnit Unit;
 
