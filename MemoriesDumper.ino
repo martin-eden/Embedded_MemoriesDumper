@@ -24,7 +24,7 @@
 */
 
 /*
-  (Some) memories can be read as streams
+  Memories can be read as streams
 
   We like stream interface. But there is some code and memory overhead
   from them.
@@ -37,10 +37,6 @@
   collection).
 */
 
-#include <me_ProgramMemory.h>
-#include <me_Eeprom.h>
-
-#include <me_StreamTools.h>
 #include <me_StreamsCollection.h>
 
 #include <me_BaseTypes.h>
@@ -71,10 +67,9 @@ void PrintStream(
 */
 void PrintRam()
 {
-  TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
   me_StreamsCollection::TWorkmemInputStream RamStream;
 
-  if (!RamStream.Init(AddrSeg))
+  if (!RamStream.Init(TAddressSegment_Max))
     return;
 
   PrintStream("RAM", &RamStream);
@@ -87,10 +82,9 @@ void PrintRam()
 */
 void PrintFlash()
 {
-  TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
   me_StreamsCollection::TProgmemInputStream FlashStream;
 
-  if (!FlashStream.Init(AddrSeg))
+  if (!FlashStream.Init(TAddressSegment_Max))
     return;
 
   PrintStream("PROGMEM", &FlashStream);
@@ -103,19 +97,12 @@ void PrintFlash()
 */
 void PrintEeprom()
 {
-  TAddress Address = 0;
-  TUnit Unit;
+  me_StreamsCollection::TEepromInputStream EepromStream;
 
-  Console.Write("EEPROM (");
+  if (!EepromStream.Init(TAddressSegment_Max))
+    return;
 
-  while (me_Eeprom::Get(&Unit, Address))
-  {
-    Console.Print(Unit);
-    ++Address;
-  }
-
-  Console.Write(")");
-  Console.EndLine();
+  PrintStream("EEPROM", &EepromStream);
 }
 
 void setup()
