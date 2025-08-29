@@ -24,9 +24,17 @@
 */
 
 /*
-  Memories can be read as streams
+  (Some) memories can be read as streams
 
-  We like stream interface. If we can't use it, we'll use direct functions.
+  We like stream interface. But there is some code and memory overhead
+  from them.
+
+  If it's problem for you, use direct calls. See [me_StreamCollections]
+  for direct calls.
+
+  But concrete function names will change over time. When they do,
+  you have to adjust your code (and we have to adjust that streams
+  collection).
 */
 
 #include <me_ProgramMemory.h>
@@ -39,36 +47,37 @@
 #include <me_BaseInterfaces.h>
 #include <me_Console.h>
 
+void PrintStream(
+  const TAsciiz Name,
+  IInputStream * DataStream
+)
+{
+  TUnit Unit;
+
+  Console.Write(Name);
+  Console.Write(" (");
+
+  while (DataStream->Read(&Unit))
+    Console.Print(Unit);
+
+  Console.Write(")");
+  Console.EndLine();
+}
+
 /*
   Print RAM contents
 
   Program state is stored there.
-
-  Output format
-
-    "RAM (" Byte.. ")" NewLine
-
-    Byte values are represented as 3-digit decimals in ASCII.
-
-  Sample output:
-
-    RAM ( 032 010 .. 013 )\n
 */
 void PrintRam()
 {
   TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
   me_StreamsCollection::TWorkmemInputStream RamStream;
-  TUnit Unit;
 
-  RamStream.Init(AddrSeg);
+  if (!RamStream.Init(AddrSeg))
+    return;
 
-  Console.Write("RAM (");
-
-  while (RamStream.Read(&Unit))
-    Console.Print(Unit);
-
-  Console.Write(")");
-  Console.EndLine();
+  PrintStream("RAM", &RamStream);
 }
 
 /*
@@ -78,19 +87,13 @@ void PrintRam()
 */
 void PrintFlash()
 {
-  TAddress Address = 0;
-  TUnit Unit;
+  TAddressSegment AddrSeg = { .Addr = 0, .Size = TUint_2_Max };
+  me_StreamsCollection::TProgmemInputStream FlashStream;
 
-  Console.Write("PROGMEM (");
+  if (!FlashStream.Init(AddrSeg))
+    return;
 
-  while (me_ProgramMemory::GetByteFrom(&Unit, Address))
-  {
-    Console.Print(Unit);
-    ++Address;
-  }
-
-  Console.Write(")");
-  Console.EndLine();
+  PrintStream("PROGMEM", &FlashStream);
 }
 
 /*
