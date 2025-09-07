@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-08-29
+  Last mod.: 2025-09-07
 */
 
 /*
@@ -18,9 +18,9 @@
 
            | Read time | Write time | Write endurance |  Amount
    --------+-----------+------------+-----------------+----------
-    SRAM   |     1     |       1    |       INF       |     2k
-    Flash  |     1     |    ? 1k    |       10k       |    32k
-    EEPROM |     1     |     10k    |      100k       |     1k
+    SRAM   |     2     |       1    |       INF       |     2k
+    Flash  |     3     |    ? 1k    |       10k       |    32k
+    EEPROM |     4     |     10k    |      100k       |     1k
 */
 
 /*
