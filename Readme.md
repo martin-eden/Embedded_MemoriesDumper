@@ -36,6 +36,7 @@ look for human specie.
 
 ## Requirements
 
+  * If you just want to upload compiled code run [Upload.sh][Upload] in `bin/`
   * Arduino Uno
   * arduino-cli
 
@@ -52,6 +53,8 @@ It allows install/remove all my libraries.
 * [My other embedded C++ stuff][Embedded]
 * [My other repositories][Repos]
 
+
+[Upload]: bin/
 
 [GetLibs]: https://github.com/martin-eden/Embedded-Framework-GetLibs
 [Embedded]: https://github.com/martin-eden/Embedded_Crafts
